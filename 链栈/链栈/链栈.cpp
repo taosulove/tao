@@ -1,69 +1,95 @@
 ﻿#include <iostream>
+#include <string>
 using namespace std;
 
-typedef int DataType;
+// 链栈结点
+typedef char ElemType;
 struct LinkStack
 {
-	DataType data;
-	LinkStack* next;
+    ElemType data;
+    LinkStack* next;
 };
-// 初始化空链栈：返回栈顶指针
-LinkStack* initLinkStack()
+
+LinkStack* InitStack()
 {
-	return nullptr;
+    return nullptr;
 }
-//判断栈是否为空
+
 bool StackEmpty(LinkStack* top)
 {
-	return top == nullptr;
+    return top == nullptr;
 }
-//入栈
-bool Push(LinkStack*& top, DataType val)
+
+bool Push(LinkStack*& top, ElemType val)
 {
-	LinkStack* newNode = new LinkStack;
-	if (!newNode)
-		return false;
-	newNode->data = val;
-	newNode->next = top;
-	top = newNode;
-	return true;
+    LinkStack* newNode = new LinkStack;
+    newNode->data = val;
+    newNode->next = top;
+    top = newNode;
+    return true;
 }
-//出栈
-bool Pop(LinkStack*& top, DataType& val)
+
+bool Pop(LinkStack*& top, ElemType& val)
 {
-	if (StackEmpty(top))
-		return false;
-	LinkStack* p = top;
-	top = top->next;
-	val = p->data;
-	delete p;
-	return true;
+    if (StackEmpty(top)) return false;
+    LinkStack* p = top;
+    val = p->data;
+    top = top->next;
+    delete p;
+    return true;
 }
-//获取栈顶元素
-bool GetTop(LinkStack* top, DataType& val)
+
+bool GetTop(LinkStack* top, ElemType& val)
 {
-	if (StackEmpty(top))
-		return false;
-	val = top->data;
-	return true;
+    if (StackEmpty(top)) return false;
+    val = top->data;
+    return true;
 }
+
+bool isValid(string s)
+{
+    LinkStack* st = InitStack();
+    char ch;
+    for (char c : s)
+    {
+        if (c == '(' || c == '[' || c == '{')
+        {
+            Push(st, c);
+        }
+        else
+        {
+            if (StackEmpty(st)) return false;
+            GetTop(st, ch);
+            if ((c == ')' && ch == '(') || (c == ']' && ch == '[') || (c == '}' && ch == '{'))
+            {
+                Pop(st, ch);
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+    return StackEmpty(st);
+}
+
 int main()
 {
-	LinkStack* st = initLinkStack();
-	int x;
-	Push(st, 10);
-	Push(st, 20);
-	GetTop(st, x);
-	cout << "栈顶: " << x << endl;
-	Pop(st, x);
-	cout << "弹出: " << x << endl;
-	if (StackEmpty(st))
-	{
-		cout << "栈为空" << endl;
-	}
-	else
-	{
-		cout << "栈不为空" << endl;
-	}
-	return 0;
+    cout << "===== 链栈测试 =====" << endl;
+    LinkStack* st = InitStack();
+    char tmp;
+    Push(st, '5');
+    Push(st, '9');
+    GetTop(st, tmp);
+    cout << "栈顶：" << tmp << endl;
+    Pop(st, tmp);
+    cout << "弹出：" << tmp << endl;
+
+    cout << "\n===== 括号匹配 =====" << endl;
+    string a = "{[()]}";
+    string b = "{[(])}";
+    cout << boolalpha;
+    cout << a << " : " << isValid(a) << endl;
+    cout << b << " : " << isValid(b) << endl;
+    return 0;
 }
